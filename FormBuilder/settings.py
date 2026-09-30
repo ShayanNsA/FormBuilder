@@ -42,7 +42,9 @@ INSTALLED_APPS = [
     'process',
     'reports',
     'submission',
-    'user'
+    'user',
+    
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
