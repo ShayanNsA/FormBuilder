@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Max
 from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password,check_password
 from django.utils.text import slugify
 
 # Create your models here.
@@ -33,18 +34,12 @@ class Form(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE,related_name='forms',verbose_name='form_creator')
 
     #determine this form belongs to which category but it is nullable
-    category=models.ForeignKey(Category,on_delete=models.SET_NULL,null=True,blank=True,related_name='forms',verbose_name='registered_category')    
+    categories=models.ManyToManyField(Category,blank=True,related_name='forms',verbose_name='registered_category')    
     title=models.CharField(max_length=250,verbose_name="form_title")
 
     descriptin=models.TextField(max_length=500,blank=True,null=True,verbose_name="form_description")
     
-    slug = models.SlugField(
-        max_length=255, 
-        unique=True,          
-        allow_unicode=True,   
-        blank=True,           
-        verbose_name="slug"
-    )
+    slug = models.SlugField(max_length=255, unique=True,allow_unicode=True,blank=True,verbose_name="slug")
     is_public=models.BooleanField(default=True,verbose_name="is_form_public?")
 
     password=models.CharField(max_length=128,blank=True,null=True,verbose_name="form_password")
@@ -54,6 +49,14 @@ class Form(models.Model):
     created_at=models.DateTimeField(auto_now_add=True,verbose_name="creation_date")
     updated_at=models.DateTimeField(auto_now=True,verbose_name="update_date")
 
+    #this method get password and save hash password in database
+    def set_password(self,raw_password):
+        self.password=make_password(raw_password)
+
+    #this method checks if password equals hash password
+    def check_password(self,raw_password):
+        return check_password(raw_password,self.password)
+       
     def save(self,*args,**kwargs):
         #if slug is empty
         if not self.slug:

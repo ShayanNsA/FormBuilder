@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Max
 from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password,check_password
 
 
 User=get_user_model()
@@ -14,7 +15,7 @@ class Process(models.Model):
             
         )
     user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="created_process",verbose_name="process_creator")
-    category=models.ForeignKey('form.Category',on_delete=models.SET_NULL,null=True,blank=True,related_name="processes",verbose_name="process_category")
+    categories=models.ManyToManyField('form.Category',blank=True,related_name="processes",verbose_name="process_category")
 
     title=models.CharField(max_length=250,verbose_name="process_title")
     descriptin=models.TextField(max_length=500,blank=True,null=True,verbose_name="process_description")
@@ -30,6 +31,12 @@ class Process(models.Model):
     created_at=models.DateTimeField(auto_now_add=True,verbose_name="creation_date")
     updated_at=models.DateTimeField(auto_now=True,verbose_name="update_date")
 
+    #this method get password and save hash password in database
+    def set_password(self,raw_password):
+        self.password=make_password(raw_password)
+    #this method checks if password equals hash password
+    def check_password(self,raw_password):
+        return check_password(raw_password,self.password)
     class Meta:
         verbose_name="process"
         verbose_name_plural="processes"

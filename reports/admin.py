@@ -1,3 +1,6 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import ScheduledReport,VisitLogs
+
+admin.site.register(ScheduledReport)
+admin.site.register(VisitLogs)
