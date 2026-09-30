@@ -1,10 +1,9 @@
 from django.db import models
 from django.db.models import Max
-from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password,check_password
 
 
-User=get_user_model()
+
 
 
 class Process(models.Model):
@@ -14,7 +13,7 @@ class Process(models.Model):
             ('non_linear', 'flexible'),
             
         )
-    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="created_process",verbose_name="process_creator")
+    user=models.ForeignKey('user.Usser',on_delete=models.CASCADE,related_name="created_process",verbose_name="process_creator")
     categories=models.ManyToManyField('form.Category',blank=True,related_name="processes",verbose_name="process_category")
 
     title=models.CharField(max_length=250,verbose_name="process_title")

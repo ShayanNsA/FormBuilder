@@ -1,19 +1,18 @@
 from django.db import models
 from django.db.models import Max
-from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password,check_password
 from django.utils.text import slugify
 
 # Create your models here.
 
-User=get_user_model()
+
 
 
 #this class depicts category entity
 class Category(models.Model):
 
     #determin user creates category
-    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name='categories',verbose_name='category_creator')
+    user=models.ForeignKey('user.User',on_delete=models.CASCADE,related_name='categories',verbose_name='category_creator')
     
     title=models.CharField(max_length=250,verbose_name="category_title")
     descriptin=models.TextField(max_length=500,blank=True,null=True,verbose_name="category_description")
@@ -31,7 +30,7 @@ class Category(models.Model):
     
 class Form(models.Model):    
     #determin user creates form
-    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name='forms',verbose_name='form_creator')
+    user=models.ForeignKey('user.User',on_delete=models.CASCADE,related_name='forms',verbose_name='form_creator')
 
     #determine this form belongs to which category but it is nullable
     categories=models.ManyToManyField(Category,blank=True,related_name='forms',verbose_name='registered_category')    
