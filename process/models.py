@@ -1,25 +1,19 @@
 from django.db import models
 from django.db.models import Max
 from django.contrib.auth.hashers import make_password,check_password
-
+from submission.constants import ProcessType
 
 
 
 
 class Process(models.Model):
-
-    PROCESS_TYPES = (
-            ('linear',  'step_by_step'),
-            ('non_linear', 'flexible'),
-            
-        )
-    user=models.ForeignKey('user.Usser',on_delete=models.CASCADE,related_name="created_process",verbose_name="process_creator")
+    user=models.ForeignKey('user.User',on_delete=models.CASCADE,related_name="created_process",verbose_name="process_creator")
     categories=models.ManyToManyField('form.Category',blank=True,related_name="processes",verbose_name="process_category")
 
     title=models.CharField(max_length=250,verbose_name="process_title")
-    descriptin=models.TextField(max_length=500,blank=True,null=True,verbose_name="process_description")
+    description=models.TextField(max_length=500,blank=True,null=True,verbose_name="process_description")
 
-    process_type=models.CharField(max_length=20,choices=PROCESS_TYPES)
+    process_type=models.CharField(max_length=20,choices=ProcessType.choices,verbose_name="process_type")
 
     is_public=models.BooleanField(default=True,verbose_name="is_process_public?")
     
@@ -36,6 +30,7 @@ class Process(models.Model):
     #this method checks if password equals hash password
     def check_password(self,raw_password):
         return check_password(raw_password,self.password)
+    
     class Meta:
         verbose_name="process"
         verbose_name_plural="processes"
@@ -45,7 +40,7 @@ class Process(models.Model):
         return f"{self.title} process is created by {self.user.username}"  
 
 class ProcessStep(models.Model):
-    process=models.ForeignKey(Process,on_delete=models.CASCADE,related_name="steps",verbose_name="process")    
+    process=models.ForeignKey('Process',on_delete=models.CASCADE,related_name="steps",verbose_name="process")    
     form=models.ForeignKey('form.Form',on_delete=models.CASCADE,related_name="step_in_process",verbose_name="related_form")
     step_order=models.PositiveIntegerField(blank=True,null=True,verbose_name="process_step")
 

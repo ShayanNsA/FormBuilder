@@ -1,6 +1,9 @@
 from rest_framework import serializers
 from process.models import Process,ProcessStep
 from form.serializers import CategorySerializer
+from submission.constants import ProcessType
+
+
 class ProcessStepSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProcessStep
@@ -22,6 +25,11 @@ class ProcessSerializer(serializers.ModelSerializer):
             'password': {'write_only': True, 'required': False},
            
         }
+    def validate_process_type(self, value):
+        if value not in ProcessType.values:
+            raise serializers.ValidationError("نوع فرآیند انتخاب شده نامعتبر است.")
+        return value
+    
     def create(self, validated_data):
         #seperate special datae
         categories = validated_data.pop('categories', [])
