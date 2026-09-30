@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import Max
 from django.contrib.auth.hashers import make_password,check_password
 from django.utils.text import slugify
-
+from submission.constants import QuestionType
 # Create your models here.
 
 
@@ -15,7 +15,7 @@ class Category(models.Model):
     user=models.ForeignKey('user.User',on_delete=models.CASCADE,related_name='categories',verbose_name='category_creator')
     
     title=models.CharField(max_length=250,verbose_name="category_title")
-    descriptin=models.TextField(max_length=500,blank=True,null=True,verbose_name="category_description")
+    description=models.TextField(max_length=500,blank=True,null=True,verbose_name="category_description")
 
     created_at=models.DateTimeField(auto_now_add=True,verbose_name="creation_date")
     updated_at=models.DateTimeField(auto_now=True,verbose_name="update_date")
@@ -33,10 +33,10 @@ class Form(models.Model):
     user=models.ForeignKey('user.User',on_delete=models.CASCADE,related_name='forms',verbose_name='form_creator')
 
     #determine this form belongs to which category but it is nullable
-    categories=models.ManyToManyField(Category,blank=True,related_name='forms',verbose_name='registered_category')    
+    categories=models.ManyToManyField('Category',blank=True,related_name='forms',verbose_name='registered_category')    
     title=models.CharField(max_length=250,verbose_name="form_title")
 
-    descriptin=models.TextField(max_length=500,blank=True,null=True,verbose_name="form_description")
+    description=models.TextField(max_length=500,blank=True,null=True,verbose_name="form_description")
     
     slug = models.SlugField(max_length=255, unique=True,allow_unicode=True,blank=True,verbose_name="slug")
     is_public=models.BooleanField(default=True,verbose_name="is_form_public?")
@@ -72,18 +72,9 @@ class Form(models.Model):
 
 class Question(models.Model):
     
-    
-    QUESTION_TYPES = (
-        ('text',  'short_text'),
-        ('textarea', 'long_text'),
-        ('radio','single_choice' ),
-        ('checkbox', 'multi_choices'),
-        ('dropdown','dropdown' ),
-    )
-
-    form = models.ForeignKey(Form, on_delete=models.CASCADE, related_name='questions', verbose_name="related_form")
+    form = models.ForeignKey('Form', on_delete=models.CASCADE, related_name='questions', verbose_name="related_form")
     title = models.CharField(max_length=500, verbose_name="question_text")
-    question_type=models.CharField(max_length=20,choices=QUESTION_TYPES)
+    question_type=models.CharField(max_length=20,choices=QuestionType.choices,verbose_name="question_type")
     is_required = models.BooleanField(default=True, verbose_name="is_response_required?")
     
     order = models.PositiveIntegerField(blank=True,null=True, verbose_name="depiction_order")

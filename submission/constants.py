@@ -1,20 +1,28 @@
 
-
-class QuestionType:
-    TEXT = "text"
-    TEXTAREA = "textarea"
-    NUMBER = "number"
-    SELECT = "select"
-    RADIO = "radio"
-    CHECKBOX = "checkbox"
-
-    TEXT_TYPES = frozenset({TEXT, TEXTAREA})
-    NUMBER_TYPES = frozenset({NUMBER})
-    SINGLE_CHOICE_TYPES = frozenset({SELECT, RADIO})
-    MULTI_CHOICE_TYPES = frozenset({CHECKBOX})
+from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
-class ProcessType:
-    LINEAR = "linear"
-    FREE = "free"
+class QuestionType(models.TextChoices):
+    TEXT = "text",_("متن کوتاه")
+    TEXTAREA = "textarea",_("پاراگراف")
+    NUMBER = "number",_("عدد")
+    SELECT = "select",_("لیست کشویی")
+    RADIO = "radio",_("تک گزینه ای")
+    CHECKBOX = "checkbox",_("چند گزینه ای")
+
+class QuestionCategory:
+    TEXT_TYPES = frozenset({QuestionType.TEXT, QuestionType.TEXTAREA})
+    NUMBER_TYPES = frozenset({QuestionType.NUMBER})
+    SINGLE_CHOICE_TYPES = frozenset({QuestionType.SELECT, QuestionType.RADIO})
+    MULTI_CHOICE_TYPES = frozenset({QuestionType.CHECKBOX})
+    
+    NEEDS_OPTIONS = frozenset({QuestionType.SELECT, QuestionType.RADIO, QuestionType.CHECKBOX})
+
+
+
+
+class ProcessType(models.TextChoices):
+    LINEAR = "linear",_("ترتیبی ")
+    FREE = "free",_("آزاد")
 
