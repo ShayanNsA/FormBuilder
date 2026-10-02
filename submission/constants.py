@@ -1,4 +1,3 @@
-
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -11,6 +10,7 @@ class QuestionType(models.TextChoices):
     RADIO = "radio",_("تک گزینه ای")
     CHECKBOX = "checkbox",_("چند گزینه ای")
 
+
 class QuestionCategory:
     TEXT_TYPES = frozenset({QuestionType.TEXT, QuestionType.TEXTAREA})
     NUMBER_TYPES = frozenset({QuestionType.NUMBER})
@@ -18,8 +18,6 @@ class QuestionCategory:
     MULTI_CHOICE_TYPES = frozenset({QuestionType.CHECKBOX})
     
     NEEDS_OPTIONS = frozenset({QuestionType.SELECT, QuestionType.RADIO, QuestionType.CHECKBOX})
-
-
 
 
 class ProcessType(models.TextChoices):
