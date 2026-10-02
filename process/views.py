@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,AllowAny
 from django.shortcuts import get_object_or_404
 
 from process.models import Process,ProcessStep
@@ -56,7 +56,33 @@ class ProcessEditDelete(APIView):
             process.is_deleted=True
             process.save()
             return Response({"message":"فرآیند مدنظر حذف گردید!"}, status=status.HTTP_204_NO_CONTENT)
+class ProcessAccess(APIView):
+    
+    permission_classes = [AllowAny]
 
+    def post(self, request, process_id):
+        #find the process by id if it is not deleted
+        process = get_object_or_404(Process, id=process_id, is_deleted=False)
+        if process.is_public:
+            serializer = ProcessSerializer(process)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        #examine password for private process
+        password = request.data.get('password')
+        if not password:
+            return Response(
+                {"error": "این فرآیند شخصی است و وارد کردن رمز عبور الزامی است."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if process.check_password(password):
+            serializer = ProcessSerializer(process)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(
+                {"error": "رمز عبور وارد شده اشتباه است."},
+                status=status.HTTP_403_FORBIDDEN
+            )
 class ProcessStepListCreate(APIView):
     
     permission_classes = [IsAuthenticated]

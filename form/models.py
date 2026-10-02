@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.db.models import Max
 from django.contrib.auth.hashers import make_password,check_password
@@ -59,7 +60,10 @@ class Form(models.Model):
     def save(self,*args,**kwargs):
         #if slug is empty
         if not self.slug:
-           self.slug=slugify(self.title,allow_unicode=True)
+           base_slug=slugify(self.title,allow_unicode=True)
+           #make a random charactor
+           unique_id=uuid.uuid4().hex[:6]
+           self.slug=f"{base_slug}-{unique_id}"
         super(Form,self).save(*args,**kwargs)    
     
     class Meta:

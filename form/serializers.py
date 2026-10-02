@@ -47,6 +47,16 @@ class FormSerializer(serializers.ModelSerializer):
             'password': {'write_only': True}
         }
 
+    def validate(self, data):
+        #check if form is private it must have password
+        is_public = data.get('is_public', self.instance.is_public if self.instance else True)
+        password = data.get('password')
+
+        if not is_public and not password and not self.instance:
+            raise serializers.ValidationError({"password": "برای فرم‌های خصوصی، تعیین رمز عبور الزامی است."})
+            
+        return data
+
     #make new  password   hash 
     def create(self, validated_data):
         #extract special data

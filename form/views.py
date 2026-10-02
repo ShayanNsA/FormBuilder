@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,AllowAny
 from django.shortcuts import get_object_or_404
 
 from form.models import Category,Form,Question
@@ -105,7 +105,39 @@ class FormEditDelete(APIView):
             form.save()
             return Response({"message":"فرم مدنظر حذف گردید!"}, status=status.HTTP_204_NO_CONTENT)
 
+class FormAccess(APIView):
+    #everybody cand send request
+    permission_classes =[AllowAny]
 
+    def post(self, request, slug):
+        #find form by slug and check it is not deleted
+        form = get_object_or_404(Form, slug=slug, is_deleted=False)
+        
+        if form.is_public:
+            serializer = FormSerializer(form)
+            return Response(
+                {"message": "دسترسی مجاز (فرم عمومی)", "form": serializer.data}, 
+                status=status.HTTP_200_OK
+            )
+        
+        password = request.data.get('password')
+        if not password:
+            return Response(
+                {"error": "این فرم خصوصی است.جهت ورود، رمز عبور را وارد کنید."}, 
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        
+        if form.check_password(password):
+            serializer = FormSerializer(form)
+            return Response(
+                {"message": "دسترسی مجاز (رمز عبور صحیح است)", "form": serializer.data}, 
+                status=status.HTTP_200_OK
+            )
+        else:
+            return Response(
+                {"error": "رمز عبور اشتباه است."}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
 class QuestionListCreate(APIView):
     permission_classes=[IsAuthenticated]
 
