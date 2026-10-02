@@ -1,18 +1,39 @@
+from django.core.validators import RegexValidator
 from rest_framework import serializers
 
 from .models import User
 
 
+phone_validator = RegexValidator(
+    regex=r"09\d{9}",
+    message="یک شماره معتبر وارد کنید! برای مثال 09123456789"
+)
+
+
 class SendOTPSerializer(serializers.Serializer):
-    phone = serializers.CharField(max_length=11)
+    phone = serializers.CharField(
+        max_length=11,
+        validators=[phone_validator]
+    )
 
 
 class VerifyOTPSerializer(serializers.Serializer):
-    phone = serializers.CharField(max_length=11)
-    code = serializers.CharField(max_length=6)
+    phone = serializers.CharField(
+        max_length=11,
+        validators=[phone_validator]
+    )
+    code = serializers.CharField(
+        max_length=6,
+        min_length=6
+    )
 
 
 class RegisterSerializer(serializers.ModelSerializer):
+    phone = serializers.CharField(
+        max_length=11,
+        validators=[phone_validator]
+    )
+
     class Meta:
         model = User
         fields = [
@@ -22,6 +43,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             "last_name",
             "email",
             "birth_date",
+            "phone",
         ]
 
         extra_kwargs = {
@@ -60,6 +82,7 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
             "email",
             "birth_date",
         ]
+
         extra_kwargs = {
             "first_name": {
                 "required": False

@@ -9,9 +9,17 @@ from .models import OTP, User
 
 
 def generate_otp(phone):
-    """
-    Create a new OTP for a phone number.
-    """
+
+    last_otp = (
+        OTP.objects
+        .filter(phone=phone)
+        .order_by("-created_at")
+        .first()
+    )
+
+    if last_otp:
+        if last_otp.created_at + timedelta(minutes=3) > timezone.now():
+            return None
 
     code = str(random.randint(100000, 999999))
 
@@ -25,9 +33,6 @@ def generate_otp(phone):
 
 
 def verify_otp(phone, code):
-    """
-    Check whether the OTP is valid.
-    """
 
     try:
         otp = OTP.objects.get(
@@ -35,6 +40,7 @@ def verify_otp(phone, code):
             code=code,
             is_used=False,
         )
+
     except OTP.DoesNotExist:
         return None
 
@@ -47,10 +53,24 @@ def verify_otp(phone, code):
     return otp
 
 
-def create_user_after_otp(phone, data):
-    """
-    Create a user after successful OTP verification.
-    """
+def get_verified_otp_for_registration(phone):
+
+    verification_limit = timezone.now() - timedelta(minutes=4)
+
+    return (
+        OTP.objects
+        .filter(
+            phone=phone,
+            is_used=True,
+            user__isnull=True,
+            created_at__gte=verification_limit,
+        )
+        .order_by("-created_at")
+        .first()
+    )
+
+
+def create_user_after_otp(phone, data, otp):
 
     user = User.objects.create_user(
         username=data["username"],
@@ -62,13 +82,13 @@ def create_user_after_otp(phone, data):
         birth_date=data.get("birth_date"),
     )
 
+    otp.user = user
+    otp.save(update_fields=["user"])
+
     return user
 
 
 def get_user_token(user):
-    """
-    Get or create authentication token for user.
-    """
 
     token, created = Token.objects.get_or_create(
         user=user
@@ -78,9 +98,6 @@ def get_user_token(user):
 
 
 def authenticate_user(username, password):
-    """
-    Authenticate user with username and password.
-    """
 
     return authenticate(
         username=username,
