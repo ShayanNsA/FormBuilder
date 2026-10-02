@@ -14,7 +14,8 @@ class User(AbstractUser):
 
 
 class OTP(models.Model):
-    user = models.ForeignKey(User,on_delete=models.CASCADE,related_name='otps')
+
+    phone = models.CharField(max_length=11)
 
     code = models.CharField(max_length=6)
 
@@ -25,4 +26,4 @@ class OTP(models.Model):
     is_used = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.user.phone} - {self.code}"
+        return f"{self.phone} - {self.code}"
