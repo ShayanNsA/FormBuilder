@@ -14,6 +14,7 @@ from django.shortcuts import get_object_or_404
 from form.models import Category,Form,Question
 from form.serializers import CategorySerializer,FormSerializer,QuestionSerializer
 
+from reports.services import log_visit
 
 class CategoryListCreate(APIView):
 
@@ -158,6 +159,8 @@ class FormGuestDetailView(APIView):
 
     def get(self, request, slug):
         form = get_object_or_404(Form, slug=slug, is_deleted=False)
+
+        log_visit(request, form)
         
         form_serializer = FormSerializer(form)
         questions = Question.objects.filter(form=form)

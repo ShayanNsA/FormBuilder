@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 from process.models import Process,ProcessStep
 from process.serializers import ProcessSerializer,ProcessStepSerializer
 
+from reports.services import log_visit
 
 class ProcessListCreate(APIView):
     permission_classes=[IsAuthenticated]
@@ -64,6 +65,7 @@ class ProcessAccess(APIView):
         #find the process by id if it is not deleted
         process = get_object_or_404(Process, id=process_id, is_deleted=False)
         if process.is_public:
+            log_visit(request, process)
             serializer = ProcessSerializer(process)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -76,6 +78,7 @@ class ProcessAccess(APIView):
             )
 
         if process.check_password(password):
+            log_visit(request, process)
             serializer = ProcessSerializer(process)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
