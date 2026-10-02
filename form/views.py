@@ -1,9 +1,15 @@
+
+import jwt
+from datetime import datetime, timedelta
+from django.conf import settings
+from .permissions import CanAccessFormOrProcess
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from django.shortcuts import get_object_or_404
+ 
 
 from form.models import Category,Form,Question
 from form.serializers import CategorySerializer,FormSerializer,QuestionSerializer
@@ -128,16 +134,39 @@ class FormAccess(APIView):
             )
         
         if form.check_password(password):
-            serializer = FormSerializer(form)
-            return Response(
-                {"message": "دسترسی مجاز (رمز عبور صحیح است)", "form": serializer.data}, 
-                status=status.HTTP_200_OK
-            )
+            #create token for forms which are independant
+            payload = {
+                'form_id': form.id,
+                'token_type': 'form_access',
+                'exp': datetime.utcnow() + timedelta(hours=2),
+                'iat': datetime.utcnow()
+            }
+            token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+            
+            return Response({
+                "message": "ورود موفقیت‌آمیز",
+                "access_token": token
+            }, status=status.HTTP_200_OK)
         else:
             return Response(
                 {"error": "رمز عبور اشتباه است."}, 
                 status=status.HTTP_403_FORBIDDEN
             )
+class FormGuestDetailView(APIView):
+   
+    permission_classes = [CanAccessFormOrProcess]
+
+    def get(self, request, slug):
+        form = get_object_or_404(Form, slug=slug, is_deleted=False)
+        
+        form_serializer = FormSerializer(form)
+        questions = Question.objects.filter(form=form)
+        question_serializer = QuestionSerializer(questions, many=True)
+        
+        return Response({
+            "form": form_serializer.data,
+            "questions": question_serializer.data
+        }, status=status.HTTP_200_OK)        
 class QuestionListCreate(APIView):
     permission_classes=[IsAuthenticated]
 
