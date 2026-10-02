@@ -29,7 +29,19 @@ class ProcessSerializer(serializers.ModelSerializer):
         if value not in ProcessType.values:
             raise serializers.ValidationError("نوع فرآیند انتخاب شده نامعتبر است.")
         return value
-    
+
+    def validate(self, attrs):
+        is_public = attrs.get('is_public', True)
+        password = attrs.get('password') 
+        if not is_public and not password:
+            #if password is set before and process is under edit
+            if self.instance and self.instance.password:
+                pass
+            else:
+                raise serializers.ValidationError({
+                    "password": "برای فرآیندهای شخصی (Private)، تعیین رمز عبور الزامی است."
+                })
+        return attrs
     def create(self, validated_data):
         #seperate special datae
         categories = validated_data.pop('categories', [])
