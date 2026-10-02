@@ -18,10 +18,12 @@ from .serializers import (
 from .services import (
     generate_otp,
     verify_otp,
+    get_verified_otp_for_registration,
     create_user_after_otp,
     get_user_token,
     authenticate_user,
 )
+
 
 @api_view(["POST"])
 def send_otp(request):
@@ -38,6 +40,14 @@ def send_otp(request):
 
     code = generate_otp(phone)
 
+    if code is None:
+        return Response(
+            {
+                "error": "لطفاً قبل از درخواست OTP جدید کمی صبر کنید."
+            },
+            status=status.HTTP_429_TOO_MANY_REQUESTS
+        )
+
     return Response(
         {
             "message": "OTP sent successfully.",
@@ -45,6 +55,7 @@ def send_otp(request):
         },
         status=status.HTTP_200_OK
     )
+
 
 @api_view(["POST"])
 def verify_otp_view(request):
@@ -90,15 +101,7 @@ def register(request):
             status=status.HTTP_400_BAD_REQUEST
         )
 
-    phone = request.data.get("phone")
-
-    if not phone:
-        return Response(
-            {
-                "error": "Phone number is required."
-            },
-            status=status.HTTP_400_BAD_REQUEST
-        )
+    phone = serializer.validated_data["phone"]
 
     if User.objects.filter(phone=phone).exists():
         return Response(
@@ -108,9 +111,20 @@ def register(request):
             status=status.HTTP_400_BAD_REQUEST
         )
 
+    otp = get_verified_otp_for_registration(phone)
+
+    if otp is None:
+        return Response(
+            {
+                "error": "شماره موبایل تأیید نشده یا زمان تأیید آن منقضی شده است."
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
     user = create_user_after_otp(
         phone=phone,
         data=serializer.validated_data,
+        otp=otp,
     )
 
     token = get_user_token(user)
@@ -123,6 +137,7 @@ def register(request):
         },
         status=status.HTTP_201_CREATED
     )
+
 
 @api_view(["POST"])
 def login_user(request):
@@ -161,6 +176,7 @@ def login_user(request):
         status=status.HTTP_200_OK
     )
 
+
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def profile(request):
@@ -171,6 +187,7 @@ def profile(request):
         serializer.data,
         status=status.HTTP_200_OK
     )
+
 
 @api_view(["PUT", "PATCH"])
 @permission_classes([IsAuthenticated])
@@ -194,6 +211,7 @@ def update_profile(request):
         ProfileSerializer(request.user).data,
         status=status.HTTP_200_OK
     )
+
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])

@@ -15,6 +15,14 @@ class User(AbstractUser):
 
 class OTP(models.Model):
 
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="otps",
+    )
+
     phone = models.CharField(max_length=11)
 
     code = models.CharField(max_length=6)
