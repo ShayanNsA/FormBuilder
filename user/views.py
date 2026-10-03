@@ -206,6 +206,7 @@ def profile(request):
     )
 
 
+
 @extend_schema(
     request=UpdateProfileSerializer,
 )
