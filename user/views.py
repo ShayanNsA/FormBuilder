@@ -24,7 +24,12 @@ from .services import (
     authenticate_user,
 )
 
+from drf_spectacular.utils import extend_schema
 
+
+@extend_schema(
+    request=SendOTPSerializer,
+)
 @api_view(["POST"])
 def send_otp(request):
 
@@ -57,6 +62,9 @@ def send_otp(request):
     )
 
 
+@extend_schema(
+    request=VerifyOTPSerializer,
+)
 @api_view(["POST"])
 def verify_otp_view(request):
 
@@ -90,6 +98,9 @@ def verify_otp_view(request):
     )
 
 
+@extend_schema(
+    request=RegisterSerializer,
+)
 @api_view(["POST"])
 def register(request):
 
@@ -139,6 +150,9 @@ def register(request):
     )
 
 
+@extend_schema(
+    request=LoginSerializer,
+)
 @api_view(["POST"])
 def login_user(request):
 
@@ -177,6 +191,9 @@ def login_user(request):
     )
 
 
+@extend_schema(
+    request=ProfileSerializer,
+)
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def profile(request):
@@ -189,6 +206,10 @@ def profile(request):
     )
 
 
+
+@extend_schema(
+    request=UpdateProfileSerializer,
+)
 @api_view(["PUT", "PATCH"])
 @permission_classes([IsAuthenticated])
 def update_profile(request):
