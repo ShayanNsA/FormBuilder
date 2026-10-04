@@ -1,11 +1,8 @@
-const API_BASE = window.location.origin;
-const API = {
-  token:()=>localStorage.getItem("fb_token"),
-  headers(extra={}){const h={"Content-Type":"application/json",...extra};const t=this.token();if(t)h.Authorization="Token "+t;return h},
-  async request(path,options={}){const res=await fetch(API_BASE+path,{...options,headers:this.headers(options.headers||{})});let data=null;try{data=await res.json()}catch{}if(!res.ok){const e=new Error(data?.error||data?.detail||"درخواست با خطا مواجه شد");e.status=res.status;e.data=data;throw e}return data},
-  get(path){return this.request(path)},
-  post(path,body){return this.request(path,{method:"POST",body:JSON.stringify(body)})},
-  put(path,body){return this.request(path,{method:"PUT",body:JSON.stringify(body)})},
-  patch(path,body){return this.request(path,{method:"PATCH",body:JSON.stringify(body)})},
-  del(path){return this.request(path,{method:"DELETE"})}
+const API_BASE="";
+const API={
+ async request(path,opt){
+  opt=opt||{};const h=Object.assign({},opt.headers||{}),t=localStorage.getItem("fb_token");if(t)h.Authorization="Token "+t;if(opt.body&&!(opt.body instanceof FormData))h["Content-Type"]="application/json";
+  const r=await fetch(API_BASE+path,Object.assign({},opt,{headers:h}));let d=null;try{d=await r.json()}catch(e){}
+  if(!r.ok){const m=d&&(d.error||d.detail||Object.values(d).flat().join(" "));throw new Error(m||"درخواست با خطا مواجه شد")}return d;
+ },get(p){return this.request(p)},post(p,b){return this.request(p,{method:"POST",body:JSON.stringify(b)})},patch(p,b){return this.request(p,{method:"PATCH",body:JSON.stringify(b)})},delete(p){return this.request(p,{method:"DELETE"})}
 };
