@@ -1,5 +1,1 @@
-from django.shortcuts import render
-
-
-def home(request):
-    return render(request, "frontend/index.html")
+from django.shortcuts import render\n\n\ndef home(request):\n    return render(request, "index.html")\n
