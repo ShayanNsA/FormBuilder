@@ -2,6 +2,23 @@
 {% block title %}{% if mode == 'login' %}ورود{% else %}ثبت‌نام{% endif %} | FormBuilder{% endblock %}
 {% block public_nav %}<header class="topbar landing-nav"><a class="brand" href="/"><span class="brand-mark">F</span><span>FormBuilder</span></a><a class="btn btn-ghost" href="{% if mode == 'login' %}/register/{% else %}/login/{% endif %}">{% if mode == 'login' %}ساخت حساب{% else %}ورود{% endif %}</a></header>{% endblock %}
 {% block page %}auth{% endblock %}
-{% block body %}<main class="auth-page"><div class="auth-card"><div class="auth-logo"><span class="brand-mark">F</span></div><div class="section-heading compact"><span class="eyebrow">{% if mode == 'login' %}خوش برگشتی{% else %}شروع کنید{% endif %}</span><h1>{% if mode == 'login' %}ورود به FormBuilder{% else %}حساب خودت را بساز{% endif %}</h1><p>{% if mode == 'login' %}نام کاربری و رمز عبور را وارد کن.{% else %}ثبت‌نام با تأیید شماره موبایل انجام می‌شود.{% endif %}</p></div>
-{% if mode == 'login' %}<form id="login-form" class="form-stack"><label>نام کاربری<input name="username" required></label><label>رمز عبور<input name="password" type="password" required></label><button class="btn btn-primary btn-block">ورود به پنل</button></form><p class="form-foot">حساب نداری؟ <a href="/register/">ثبت‌نام کن</a></p>
-{% else %}<form id="register-form" class="form-stack"><div class="two-col"><label>نام کاربری<input name="username" required></label><label>شماره موبایل<input name="phone" required maxlength="11" inputmode="numeric" placeholder="09123456789"></label></div><div class="two-col"><label>نام<input name="first_name"></label><label>نام خانوادگی<input name="last_name"></label></div><label>ایمیل<input name="email" type="email"></label><div class="two-col"><label>تاریخ تولد<input name="birth_date" type="date"></label><label>رمز عبور<input name="password" type="password" required></label></div><div class="otp-row"><input id="otp-code" maxlength="6" placeholder="کد ۶ رقمی"><button class="btn btn-soft" type="button" id="send-otp">ارسال کد</button></div><div id="otp-hint" class="hint"></div><button class="btn btn-primary btn-block">ساخت حساب</button></form><p class="form-foot">حساب داری؟ <a href="/login/">وارد شو</a></p>{% endif %}</div></main>{% endblock %}
+{% block body %}
+<main class="auth-page"><div class="auth-card">
+<div class="auth-logo"><span class="brand-mark">F</span></div>
+<div class="section-heading compact"><span class="eyebrow">{% if mode == 'login' %}خوش برگشتی{% else %}شروع کنید{% endif %}</span><h1>{% if mode == 'login' %}ورود به FormBuilder{% else %}حساب خودت را بساز{% endif %}</h1><p>{% if mode == 'login' %}روش ورودت را انتخاب کن.{% else %}اطلاعاتت را کامل وارد کن و شماره موبایل را تأیید کن.{% endif %}</p></div>
+{% if mode == 'login' %}
+<div class="auth-tabs"><button type="button" class="auth-tab active" data-login-mode="password">ورود با رمز</button><button type="button" class="auth-tab" data-login-mode="otp">ورود با OTP</button></div>
+<form id="login-password-form" class="form-stack login-panel"><label>نام کاربری<input name="username" autocomplete="username" required></label><label>رمز عبور<div class="password-field"><input name="password" type="password" autocomplete="current-password" required><button type="button" class="password-toggle">نمایش</button></div></label><button class="btn btn-primary btn-block" type="submit">ورود به پنل</button></form>
+<form id="login-otp-form" class="form-stack login-panel" hidden><label>شماره موبایل<input name="phone" maxlength="11" inputmode="numeric" placeholder="09123456789" required></label><div class="otp-row"><input name="code" maxlength="6" inputmode="numeric" placeholder="کد ۶ رقمی" required><button class="btn btn-soft" type="button" id="login-send-otp">ارسال کد</button></div><div id="login-otp-hint" class="hint"></div><button class="btn btn-primary btn-block" type="submit">تأیید و ورود</button></form>
+<p class="form-foot">حساب نداری؟ <a href="/register/">ثبت‌نام کن</a></p>
+{% else %}
+<form id="register-form" class="form-stack">
+<div class="two-col"><label>نام کاربری<input name="username" autocomplete="username" required></label><label>شماره موبایل<input name="phone" required maxlength="11" inputmode="numeric" placeholder="09123456789"></label></div>
+<div class="two-col"><label>نام<input name="first_name" required></label><label>نام خانوادگی<input name="last_name" required></label></div>
+<label>ایمیل<input name="email" type="email" required></label>
+<div class="two-col"><label>تاریخ تولد<input name="birth_date" type="date" required></label><label>رمز عبور<div class="password-field"><input name="password" type="password" autocomplete="new-password" minlength="8" required><button type="button" class="password-toggle">نمایش</button></div></label></div>
+<div class="otp-row"><input name="otp_code" id="otp-code" maxlength="6" inputmode="numeric" placeholder="کد ۶ رقمی" required><button class="btn btn-soft" type="button" id="send-otp">ارسال کد تأیید</button></div>
+<div id="otp-hint" class="hint">ابتدا شماره موبایل را وارد و کد تأیید را دریافت کنید.</div>
+<button class="btn btn-primary btn-block" type="submit">ساخت حساب</button>
+</form><p class="form-foot">حساب داری؟ <a href="/login/">وارد شو</a></p>{% endif %}
+</div></main>{% endblock %}
