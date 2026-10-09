@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{% block title %}FormBuilder{% endblock %}</title>
-<link rel="stylesheet" href="{% static 'frontend/css/app.css' %}">
+<link rel="stylesheet" href="{% static 'frontend/css/app.css' %}?v=2">
 </head>
 <body data-page="{% block page %}{% endblock %}">
 <div id="toast" class="toast"></div><div id="app-loader" class="app-loader"><div class="spinner"></div></div>
@@ -16,5 +16,5 @@
 </header>
 {% endblock %}
 {% block body %}{% endblock %}
-<script src="{% static 'frontend/js/app.js' %}"></script>
+<script src="{% static 'frontend/js/app.js' %}?v=2"></script>
 </body></html>
