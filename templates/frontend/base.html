@@ -2,19 +2,30 @@
 <!doctype html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{% block title %}FormBuilder{% endblock %}</title>
-<link rel="stylesheet" href="{% static 'frontend/css/app.css' %}?v=2">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#5b5bd6">
+  <title>{% block title %}فرم‌ساز | FormBuilder{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'frontend/css/app.css' %}?v=3">
 </head>
 <body data-page="{% block page %}{% endblock %}">
-<div id="toast" class="toast"></div><div id="app-loader" class="app-loader"><div class="spinner"></div></div>
-{% block public_nav %}
-<header class="topbar">
-<a class="brand" href="/"><span class="brand-mark">F</span><span>FormBuilder</span></a>
-<nav class="topnav"><a href="/dashboard/">داشبورد</a><a href="/forms/">فرم‌ها</a><a href="/processes/">فرآیندها</a><a href="/reports/">گزارش‌ها</a></nav>
-<div class="top-actions"><a class="avatar" href="/profile/" id="nav-avatar">?</a><button class="icon-btn" id="logout-btn">↪</button></div>
-</header>
-{% endblock %}
-{% block body %}{% endblock %}
-<script src="{% static 'frontend/js/app.js' %}?v=2"></script>
-</body></html>
+  <div id="toast-region" class="toast-region" aria-live="polite"></div>
+  <div id="app-loader" class="app-loader" hidden><span class="spinner"></span><span>در حال بارگذاری...</span></div>
+  {% block shell %}
+    <header class="topbar">
+      <a class="brand" href="/"><span class="brand-mark">F</span><span>فرم‌ساز</span><small>FormBuilder</small></a>
+      <button class="mobile-menu" id="mobile-menu" aria-label="باز کردن منو">☰</button>
+      <nav class="topnav"><a href="/dashboard/">داشبورد</a><a href="/forms/">فرم‌های من</a><a href="/processes/">فرآیندها</a><a href="/reports/">گزارش‌ها</a></nav>
+      <div class="top-actions"><a class="avatar" href="/profile/" id="nav-avatar">؟</a><button class="icon-btn" id="logout-btn" title="خروج از حساب" aria-label="خروج">↪</button></div>
+    </header>
+    <div class="app-layout">
+      <aside class="sidebar" id="sidebar">{% include "frontend/partials/sidebar.html" %}</aside>
+      <main class="content">{% block body %}{% endblock %}</main>
+    </div>
+  {% endblock %}
+  <script src="{% static 'frontend/js/app.js' %}?v=3" defer></script>
+</body>
+</html>
