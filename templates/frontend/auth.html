@@ -1,39 +1,12 @@
 {% extends "frontend/base.html" %}
-{% block title %}{% if mode == 'login' %}ورود به حساب{% else %}ساخت حساب کاربری{% endif %} | FormBuilder{% endblock %}
-{% block public_nav %}<header class="topbar landing-nav"><a class="brand" href="/"><span class="brand-mark">F</span><span>FormBuilder</span></a><a class="btn btn-ghost" href="{% if mode == 'login' %}/register/{% else %}/login/{% endif %}">{% if mode == 'login' %}ساخت حساب جدید{% else %}ورود به حساب{% endif %}</a></header>{% endblock %}
-{% block page %}auth{% endblock %}
-{% block body %}
-<main class="auth-page">
-<section class="auth-card auth-card-modern">
-<div class="auth-logo"><span class="brand-mark">F</span></div>
-<div class="section-heading compact"><span class="eyebrow">{% if mode == 'login' %}فضای کاری شما منتظر شماست{% else %}چند قدم تا شروع کار{% endif %}</span><h1>{% if mode == 'login' %}خوش برگشتی{% else %}حساب خودت را بساز{% endif %}</h1><p>{% if mode == 'login' %}با روش دلخواه وارد حساب خود شو.{% else %}اطلاعات را کامل کن و شماره موبایلت را تأیید کن.{% endif %}</p></div>
+{% block title %}{% if mode == 'login' %}ورود به حساب{% else %}ثبت‌نام{% endif %} | فرم‌ساز{% endblock %}
+{% block page %}{% if mode == 'login' %}login{% else %}register{% endif %}{% endblock %}
+{% block shell %}
+<header class="topbar landing-nav"><a class="brand" href="/"><span class="brand-mark">F</span><span>فرم‌ساز</span><small>FormBuilder</small></a><div class="top-actions"><span class="muted">{% if mode == 'login' %}حساب کاربری نداری؟{% else %}قبلاً ثبت‌نام کرده‌ای؟{% endif %}</span><a class="btn btn-quiet" href="{% if mode == 'login' %}/register/{% else %}/login/{% endif %}">{% if mode == 'login' %}ثبت‌نام{% else %}ورود{% endif %}</a></div></header>
+<main class="auth-page"><div class="auth-decoration"><div class="auth-decoration-inner"><span class="decoration-star">✦</span><span class="eyebrow">فضای کاری یکپارچه</span><h2>کارهای تکراری را ساده‌تر انجام بده.</h2><p>فرم بساز، فرآیند تعریف کن و اطلاعات را در یک فضای منظم مدیریت کن.</p><div class="auth-mini-card"><span class="mini-check">✓</span><div><strong>همه‌چیز مرتب و در دسترس</strong><small>از طراحی تا گزارش‌گیری</small></div></div></div></div><section class="auth-card"><div class="auth-logo"><span class="brand-mark">F</span></div><span class="eyebrow">{% if mode == 'login' %}خوش برگشتی{% else %}شروع کار با فرم‌ساز{% endif %}</span><h1>{% if mode == 'login' %}وارد حساب خودت شو{% else %}حساب خودت را بساز{% endif %}</h1><p class="auth-intro">{% if mode == 'login' %}برای ادامه به فضای کاری خود وارد شو.{% else %}اطلاعات را وارد کن و شماره موبایل را تأیید کن.{% endif %}</p>
 {% if mode == 'login' %}
-<div class="auth-tabs" role="tablist"><button type="button" class="auth-tab active" data-login-mode="password" role="tab" aria-selected="true">رمز عبور</button><button type="button" class="auth-tab" data-login-mode="otp" role="tab" aria-selected="false">کد یک‌بارمصرف</button></div>
-<div id="login-api-note" class="inline-note" hidden>API فعلی پروژه برای ورود با OTP هنوز توکن ورود صادر نمی‌کند. دریافت و تأیید کد قابل انجام است؛ برای ورود نهایی باید endpoint احراز هویت OTP به بک‌اند اضافه شود.</div>
-<form id="login-password-form" class="form-stack" novalidate>
-<label>نام کاربری<input name="username" autocomplete="username" placeholder="نام کاربری" required></label>
-<label>رمز عبور<div class="password-field"><input name="password" type="password" autocomplete="current-password" placeholder="رمز عبور حساب" required><button type="button" class="password-toggle">نمایش</button></div></label>
-<div class="form-message" id="password-error" aria-live="polite"></div><button class="btn btn-primary btn-block" type="submit">ورود به پنل <span>←</span></button>
-</form>
-<form id="login-otp-form" class="form-stack" hidden novalidate>
-<label>شماره موبایل<input name="phone" maxlength="11" inputmode="numeric" autocomplete="tel" placeholder="09123456789" required></label>
-<div class="otp-row"><input name="code" maxlength="6" inputmode="numeric" autocomplete="one-time-code" placeholder="کد ۶ رقمی" required><button class="btn btn-soft" type="button" id="login-send-otp">ارسال کد</button></div>
-<div id="login-otp-hint" class="hint" aria-live="polite"></div><div class="form-message" id="otp-login-error" aria-live="polite"></div><button class="btn btn-primary btn-block" type="submit">تأیید کد</button>
-</form>
-<p class="form-foot">حساب نداری؟ <a href="/register/">ثبت‌نام رایگان</a></p>
+<form id="login-form" class="form-stack" novalidate><label>نام کاربری<input name="username" autocomplete="username" required placeholder="نام کاربری خود را وارد کن"></label><label>رمز عبور<div class="password-field"><input name="password" type="password" autocomplete="current-password" required placeholder="رمز عبور"><button type="button" class="password-toggle">نمایش</button></div></label><div id="login-error" class="form-message" aria-live="polite"></div><button class="btn btn-primary btn-block btn-lg" type="submit">ورود به پنل <span>←</span></button></form><div class="auth-divider"><span>ورود با رمز عبور</span></div><p class="auth-foot">برای این پروژه ورود با کد یک‌بارمصرف هنوز از سمت API پشتیبانی نمی‌شود.</p>
 {% else %}
-<form id="register-form" class="form-stack" novalidate>
-<div class="two-col"><label>نام<input name="first_name" autocomplete="given-name" required placeholder="نام"></label><label>نام خانوادگی<input name="last_name" autocomplete="family-name" required placeholder="نام خانوادگی"></label></div>
-<label>نام کاربری<input name="username" autocomplete="username" required minlength="3" placeholder="برای مثال shayan123"></label>
-<label>شماره موبایل<input name="phone" autocomplete="tel" required maxlength="11" inputmode="numeric" placeholder="09123456789"></label>
-<label>ایمیل<input name="email" type="email" autocomplete="email" required placeholder="name@example.com"></label>
-<div class="two-col"><label>تاریخ تولد<input name="birth_date" type="date" autocomplete="bday" required></label><label>رمز عبور<div class="password-field"><input name="password" type="password" autocomplete="new-password" minlength="8" required placeholder="حداقل ۸ نویسه"><button type="button" class="password-toggle">نمایش</button></div></label></div>
-<div class="otp-divider"><span>تأیید شماره موبایل</span></div>
-<div class="otp-row"><input name="otp_code" id="otp-code" maxlength="6" inputmode="numeric" autocomplete="one-time-code" placeholder="کد ۶ رقمی" required><button class="btn btn-soft" type="button" id="send-otp">دریافت کد</button></div>
-<div id="otp-hint" class="hint" aria-live="polite">شماره موبایل را وارد کن و کد تأیید را بگیر.</div><div id="register-error" class="form-message" aria-live="polite"></div>
-<button class="btn btn-primary btn-block" type="submit">ساخت حساب کاربری <span>←</span></button>
-</form><p class="form-foot">قبلاً ثبت‌نام کرده‌ای؟ <a href="/login/">وارد شو</a></p>
-{% endif %}
-<div class="auth-security"><span>⌑</span><span>اطلاعات حساب از طریق API پروژه ارسال می‌شود.</span></div>
-</section></main>
+<form id="register-form" class="form-stack" novalidate><div class="two-col"><label>نام<input name="first_name" autocomplete="given-name" required placeholder="نام"></label><label>نام خانوادگی<input name="last_name" autocomplete="family-name" required placeholder="نام خانوادگی"></label></div><label>نام کاربری<input name="username" autocomplete="username" minlength="3" required placeholder="مثلاً sara123"></label><label>شماره موبایل<input name="phone" maxlength="11" inputmode="numeric" autocomplete="tel" required placeholder="09123456789"></label><label>ایمیل<input name="email" type="email" autocomplete="email" required placeholder="name@example.com"></label><div class="two-col"><label>تاریخ تولد<input name="birth_date" type="date" autocomplete="bday"></label><label>رمز عبور<div class="password-field"><input name="password" type="password" autocomplete="new-password" minlength="8" required placeholder="حداقل ۸ نویسه"><button type="button" class="password-toggle">نمایش</button></div></label></div><div class="otp-box"><div><strong>تأیید شماره موبایل</strong><small>کد آزمایشی در پاسخ API برگردانده می‌شود.</small></div><button class="btn btn-soft" id="send-otp" type="button">دریافت کد</button></div><label>کد تأیید ۶ رقمی<input name="otp_code" id="otp-code" maxlength="6" inputmode="numeric" autocomplete="one-time-code" required placeholder="کد پیامک‌شده"></label><div id="otp-hint" class="hint" aria-live="polite">ابتدا شماره موبایل را وارد کن و کد بگیر.</div><div id="register-error" class="form-message" aria-live="polite"></div><button class="btn btn-primary btn-block btn-lg" type="submit">ساخت حساب کاربری <span>←</span></button></form>
+{% endif %}<div class="auth-security"><span>⌑</span><span>ارتباط با API پروژه و نمایش خطاهای اعتبارسنجی</span></div></section></main>
 {% endblock %}
